@@ -2,8 +2,6 @@ package com.thd;
 
 import com.thd.gui.CubicleControl;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -16,7 +14,7 @@ public class FXMLExample extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        CubicleControl cubicleControl = new CubicleControl();
+        CubicleControl cubicleControl = new CubicleControl(1, "dd");
         cubicleControl.setText("Hello!");
 
         stage.setScene(new Scene(cubicleControl));

@@ -1,5 +1,6 @@
 package com.thd.opc;
 
+import com.thd.tcpserver.TcpServer;
 import com.thd.utils.PropertiesUtil;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +14,7 @@ import org.openscada.opc.lib.list.Categories;
 import org.openscada.opc.lib.list.Category;
 import org.openscada.opc.lib.list.ServerList;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -60,7 +62,7 @@ public class OPCContext {
 
     public static void serverList() throws ConfigurationException, JIException, UnknownHostException {
 
-        String host = PropertiesUtil.getValue("opc.host", "192.168.30.201");
+        String host = PropertiesUtil.getValue("opc.host", "192.168.2.202");
         String domain = PropertiesUtil.getValue("opc.domain", "");
         String username = PropertiesUtil.getValue("opc.username", "opc");
         String password = PropertiesUtil.getValue("opc.password", "opc123");
@@ -222,8 +224,9 @@ public class OPCContext {
 
             try {
 
-                System.out.println(Calendar.getInstance().getTimeInMillis() + ": " +  itemId +  " >>> writing value: 1");
+                System.out.print(Calendar.getInstance().getTimeInMillis() + ": " +  itemId +  " >>> writing value: 1 ........ ");
                 item.write(new JIVariant(1));
+                System.out.println("OK");
 
                 Thread.sleep(delay);
 
@@ -258,6 +261,7 @@ public class OPCContext {
                 _server.connect();
             }
         } catch (AlreadyConnectedException e) {
+            e.printStackTrace();
         }
 
         final  ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -298,30 +302,38 @@ public class OPCContext {
 
     public static void main(String[] args) throws ConfigurationException, UnknownHostException, JIException {
 
-
-        serverList();
-
         String item_color = PropertiesUtil.getValue("opc.color.itemid", "Channel1.Device1.Color");
 
         String item_pulse = PropertiesUtil.getValue("opc.pulse.itemid", "Channel1.Device1.Pulse");
+
+        System.out.println("item_color: " + item_color);
+        System.out.println("item_pulse: " + item_pulse);
 
         try {
             OPCContext.serverList();
 
             final  OPCContext  context = OPCContext.create();
 
-            context.monitor(item_pulse, 200, 3000);
+            //context.monitor("S7-200.D14.v200", 200, 300000);
+//
+//
+//            Item item = context.readValue(item_color);
+//
+//            System.out.println(JIVariants.getValue(item.read(true).getValue()));
+//
+//            context.writeValue(item_color, 1);
 
-
-            Item item = context.readValue(item_color);
-
-            System.out.println(JIVariants.getValue(item.read(true).getValue()));
-
-            context.writeValue(item_color, 1);
-
-            context.pulseSignal(item_pulse, 1000);
+            for (int i = 0; i < 4; i++) {
+                context.pulseSignal("S7-200.D14.v20" + i, 5000);
+            }
 
         }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            new TcpServer(10001, "测试位-").start();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

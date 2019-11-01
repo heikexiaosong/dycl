@@ -3,11 +3,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<fx:root type="javafx.scene.layout.VBox"
-         xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
-        style=" -fx-border-color: rgba(2,255,138,0.26); -fx-border-width: 2;">
+<fx:root style=" -fx-border-color: rgba(2,255,138,0.26); -fx-border-width: 2;" type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
     <TableView fx:id="mTable" prefHeight="267.0" prefWidth="250.0">
         <columns>
             <TableColumn fx:id="mColumnPart" prefWidth="100.0" text="物料" />
@@ -15,5 +15,13 @@
             <TableColumn fx:id="mColumnStatus" prefWidth="50.0" text="状态" />
         </columns>
     </TableView>
-    <Label fx:id="mLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="250.0" style="-fx-background-color: rgba(127,127,127,0.46);" text="未连接" textAlignment="CENTER" />
+   <HBox>
+      <children>
+         <Label fx:id="mName"  alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" prefHeight="33.0" prefWidth="120.0" style="-fx-background-color: rgba(127,127,127,0.46);" text="[工位 1-1]" textAlignment="JUSTIFY" textOverrun="CLIP">
+            <font>
+               <Font size="15.0" />
+            </font></Label>
+          <Label fx:id="mStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="250.0" style="-fx-background-color: rgba(127,127,127,0.46);" text="装配中..." textAlignment="CENTER" />
+      </children>
+   </HBox>
 </fx:root>

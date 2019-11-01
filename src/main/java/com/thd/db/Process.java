@@ -20,6 +20,16 @@ public class Process {
 
     private String status;
 
+    private boolean success;
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
     public int getId() {
         return id;
     }
