@@ -1,5 +1,6 @@
 package com.thd.gui;
 
+import com.thd.FXMLDemo;
 import com.thd.db.H2ConnectionFactory;
 import com.thd.db.Process;
 import com.thd.excel.ExcelReader;
@@ -32,7 +33,7 @@ public class MainController implements Initializable, IHandler {
 
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private static ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private static  final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @FXML
     private GridPane gridPane;
@@ -54,13 +55,21 @@ public class MainController implements Initializable, IHandler {
 
             try {
                 List<Process> processes =  ExcelReader.load(file);
-                for (Process process : processes) {
-                    System.out.println(process);
+
+                for (CubicleControl cubicleControl : cubicleControls) {
+                    cubicleControl.setDatas(new ArrayList<>());
                 }
 
-//                for (CubicleControl cubicleControl : cubicleControls) {
-//                    cubicleControl.setDatas(processes);
-//                }
+                for (Process process : processes) {
+                    System.out.println(process);
+
+                    for (CubicleControl cubicleControl : cubicleControls) {
+                        if ( cubicleControl.accept(process.getStation()) ){
+                            cubicleControl.insert(process);
+                            break;
+                        }
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -126,6 +135,23 @@ public class MainController implements Initializable, IHandler {
                 }
             }
         });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("11111");
+                    FXMLDemo.CDL.await();
+                    System.out.println("22222");
+                    executorService.shutdownNow();
+                    if ( !executorService.isTerminated() ){
+                        executorService.shutdown();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         log("启动完成");
     }

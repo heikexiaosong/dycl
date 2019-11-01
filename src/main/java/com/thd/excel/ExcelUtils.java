@@ -84,29 +84,29 @@ public class ExcelUtils {
         return obj.toString().trim();
     }
 
-    public static Double getFloatValue(Cell cell) {
+    public static int getIntValue(Cell cell) {
         if ( cell == null ){
-            return 0D;
+            return 0;
         }
 
         Object obj = cellValue(cell);
         if ( obj == null ){
-            return 0D;
+            return 0;
         }
 
         if ( obj instanceof Number ){
-            return  ((Number)obj).doubleValue();
+            return  ((Number)obj).intValue();
         }
 
         if ( obj instanceof String  && "".equalsIgnoreCase(obj.toString()) ){
-            return null;
+            return 0;
         }
 
        try {
-           return Double.parseDouble(obj.toString().trim());
+           return Integer.parseInt(obj.toString().trim());
        } catch (Exception e){
             e.printStackTrace();
-           return 0D;
+           return 0;
        }
     }
 

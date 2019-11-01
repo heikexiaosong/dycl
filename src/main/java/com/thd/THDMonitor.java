@@ -28,7 +28,7 @@ public class THDMonitor extends Application {
     @Override
     public void start(final Stage primaryStage) {
 
-        TrayFactory.build(primaryStage);
+        //TrayFactory.build(primaryStage);
 
         primaryStage.setTitle("THD工序物料监测工具 - V1.0");
         GridPane grid = new GridPane();

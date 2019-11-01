@@ -95,7 +95,7 @@ public class Main {
         Process process = new Process();
 
         process.setCode("TX0012-2234");
-        process.setStation("1");
+        process.setStation(1);
         process.setAssembly("RKM5317722G11");
         process.setPart("365910012204");
         process.setTitle("1号导轨组件，左");

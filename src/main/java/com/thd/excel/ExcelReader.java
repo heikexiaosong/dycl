@@ -23,7 +23,7 @@ public class ExcelReader {
     public static List<Process> load(File file) throws IOException {
         InputStream inputStream=new FileInputStream(file);//创建一个输入流读取单元格
         Workbook wb=new XSSFWorkbook(inputStream);
-        Sheet sheet=wb.getSheetAt(1);//获取第一个sheet页
+        Sheet sheet=wb.getSheetAt(0);//获取第一个sheet页
         System.out.println("\t[" + file.getAbsolutePath() + "]数据配置Sheet: " + sheet.getSheetName());
 
         List<Process> result = new ArrayList<Process>();
@@ -33,7 +33,7 @@ public class ExcelReader {
                     || row.getCell(1) == null ){
                 continue;
             }
-            String station = ExcelUtils.getCellValue(row.getCell(0));
+            int station = ExcelUtils.getIntValue(row.getCell(0));
             String part = ExcelUtils.getCellValue(row.getCell(1));
             String title = ExcelUtils.getCellValue(row.getCell(2));
 

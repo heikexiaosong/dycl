@@ -6,7 +6,7 @@ public class Process {
 
     private String code;
 
-    private String station;
+    private int station;
 
     private String assembly;
 
@@ -46,11 +46,11 @@ public class Process {
         this.code = code;
     }
 
-    public String getStation() {
+    public int getStation() {
         return station;
     }
 
-    public void setStation(String station) {
+    public void setStation(int station) {
         this.station = station;
     }
 
