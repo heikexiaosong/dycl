@@ -15,7 +15,7 @@
    <ButtonBar prefHeight="40.0" prefWidth="200.0">
      <buttons>
          <Button minWidth="50" onAction="#start" prefWidth="80" text="开 始" />
-       <Button mnemonicParsing="false" onAction="#restart" text="重新开始" />
+       <Button mnemonicParsing="false" onAction="#clear" text="清 除" />
      </buttons>
    </ButtonBar>
     <GridPane fx:id="gridPane">

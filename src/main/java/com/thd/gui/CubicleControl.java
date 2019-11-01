@@ -112,6 +112,18 @@ public class CubicleControl extends VBox {
         }
     }
 
+    public void clear(){
+        mTable.getItems().clear();
+        mTable.refresh();
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                onClosed();
+            }
+        });
+    }
+
     public String getText() {
         return textProperty().get();
     }

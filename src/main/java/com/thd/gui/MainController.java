@@ -79,23 +79,9 @@ public class MainController implements Initializable, IHandler {
 
     }
 
-    public void restart(ActionEvent event) {
-        System.out.println("You clicked me!");
-
-        Connection conn = H2ConnectionFactory.getConnection();
-        QueryRunner runner = new QueryRunner();
-
-        String sql = "select * from PROCESS";
-        List<Process> processes = null;
-        try {
-            processes = runner.query(conn, sql, new BeanListHandler<Process>(Process.class));
-
-            for (CubicleControl cubicleControl : cubicleControls) {
-                cubicleControl.setDatas(processes);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void clear(ActionEvent event) {
+        for (CubicleControl cubicleControl : cubicleControls) {
+            cubicleControl.clear();
         }
 
     }
