@@ -18,6 +18,8 @@ public class Process {
 
     private String tag;
 
+    private String status;
+
     public int getId() {
         return id;
     }
@@ -80,6 +82,14 @@ public class Process {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

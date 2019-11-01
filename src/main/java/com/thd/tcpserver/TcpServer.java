@@ -1,10 +1,14 @@
 package com.thd.tcpserver;
 
+import javafx.application.Platform;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TcpServer {
 
@@ -20,7 +24,22 @@ public class TcpServer {
     }
 
     public static void main(String[] args) throws IOException {
-       new TcpServer(9000, "测试位").start();
+
+        final ExecutorService executorService = Executors.newFixedThreadPool(8);
+
+        for (int i = 0; i < 8; i++) {
+            final int offset = i;
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        new TcpServer(10001+offset, "测试位-" + offset).start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     public void start() throws IOException {

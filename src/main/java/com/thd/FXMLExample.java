@@ -1,5 +1,6 @@
 package com.thd;
 
+import com.thd.gui.CubicleControl;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,12 +16,13 @@ public class FXMLExample extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("fxml_example.fxml"));
+        CubicleControl cubicleControl = new CubicleControl();
+        cubicleControl.setText("Hello!");
 
-        Scene scene = new Scene(root, 300, 275);
-
-        stage.setTitle("FXML Welcome");
-        stage.setScene(scene);
+        stage.setScene(new Scene(cubicleControl));
+        stage.setTitle("Custom Control");
+        stage.setWidth(300);
+        stage.setHeight(200);
         stage.show();
     }
 }

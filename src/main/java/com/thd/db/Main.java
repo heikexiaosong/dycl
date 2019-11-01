@@ -77,11 +77,11 @@ public class Main {
 
         init(conn);
 
-        Product product = new Product();
-        product.setCode("1111");
-        product.setName("测试1");
-        insert(conn, product);
-
+//        Product product = new Product();
+//        product.setCode("1111");
+//        product.setName("测试1");
+//        insert(conn, product);
+//
         QueryRunner runner = new QueryRunner();
 
 
@@ -92,16 +92,16 @@ public class Main {
         }
 
 
-        Process process = new Process();
-
-        process.setCode("TX0012-2234");
-        process.setStation("1");
-        process.setAssembly("'RKM5317722G11'");
-        process.setPart("'5317722D10'");
-        process.setTitle("1号导轨组件，左");
-        process.setQty(1);
-        process.setTag("'上部'");
-        insert(conn, process);
+//        Process process = new Process();
+//
+//        process.setCode("TX0012-2234");
+//        process.setStation("1");
+//        process.setAssembly("'RKM5317722G11'");
+//        process.setPart("'5317722D10'");
+//        process.setTitle("1号导轨组件，左");
+//        process.setQty(1);
+//        process.setTag("'上部'");
+//        insert(conn, process);
 
         sql = "select * from PROCESS";
         List<Process> processes = runner.query(conn, sql, new BeanListHandler<Process>(Process.class));

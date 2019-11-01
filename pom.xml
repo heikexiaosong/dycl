@@ -75,7 +75,7 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<includes>
-					<include>**/*.gif</include>
+					<include>**/*.jpg</include>
 					<include>**/*.properties</include>
 					<include>**/*.css</include>
 					<include>**/*.png</include>
