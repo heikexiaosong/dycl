@@ -37,6 +37,8 @@ public class FXMLDemo extends Application {
             }
         });
 
+        primaryStage.setMaximized(true);
+
         primaryStage.show();
     }
 

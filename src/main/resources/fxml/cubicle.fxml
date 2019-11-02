@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 
 <fx:root style=" -fx-border-color: rgba(2,255,138,0.26); -fx-border-width: 2;" type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-    <TableView fx:id="mTable" prefHeight="267.0" prefWidth="250.0">
+    <TableView fx:id="mTable" prefHeight="360.0" prefWidth="350.0">
         <columns>
             <TableColumn fx:id="mColumnPart" prefWidth="100.0" text="物料" />
             <TableColumn fx:id="mColumnTitle" prefWidth="100.0" text="名称" />
@@ -21,7 +21,7 @@
             <font>
                <Font size="15.0" />
             </font></Label>
-          <Label fx:id="mStatus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="33.0" prefWidth="250.0" style="-fx-background-color: rgba(127,127,127,0.46);" text="装配中..." textAlignment="CENTER" />
+          <Label fx:id="mStatus" maxHeight="1.7976931348623157E308" maxWidth="400" prefHeight="33.0" prefWidth="400.0" style="-fx-background-color: rgba(127,127,127,0.46);" text="装配中..." textAlignment="CENTER" />
       </children>
    </HBox>
 </fx:root>
