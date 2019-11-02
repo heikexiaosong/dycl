@@ -5,6 +5,7 @@ import com.thd.db.H2ConnectionFactory;
 import com.thd.db.Process;
 import com.thd.excel.ExcelReader;
 import com.thd.excel.ExcelUtils;
+import com.thd.opc.OPCContext;
 import com.thd.tcpserver.IHandler;
 import com.thd.tcpserver.TcpServer;
 import javafx.event.ActionEvent;
@@ -45,7 +46,6 @@ public class MainController implements Initializable, IHandler {
 
     public void start(ActionEvent event) {
 
-
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("选择工序物料配置文件");
 
@@ -70,13 +70,16 @@ public class MainController implements Initializable, IHandler {
                         }
                     }
                 }
+
+
+                for (CubicleControl cubicleControl : cubicleControls) {
+                    cubicleControl.check();
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
-
-
     }
 
     public void clear(ActionEvent event) {
@@ -97,12 +100,31 @@ public class MainController implements Initializable, IHandler {
         }
     }
 
+    /**
+     * 初始化
+     *
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        for (int i = 0; i < 2; i++) {
 
+        OnScanFinish scanFinish = new OnScanFinish() {
+            final  OPCContext  context = OPCContext.create();
+            @Override
+            public void onFinish(int pos) {
+                try {
+                    context.pulseSignal("S7-200.D14.v20" + pos, 1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
-                CubicleControl cubicleControl = new CubicleControl(i*2 + j + 1, "[" + (i+1) + "-" + (j+1) + "]");
+                CubicleControl cubicleControl = new CubicleControl(i*4 + j + 1, "[" + (i+1) + "-" + (j+1) + "]");
+                cubicleControl.setScanFinish(scanFinish);
                 cubicleControls.add(cubicleControl);
                 gridPane.add(cubicleControl, j, i);
             }

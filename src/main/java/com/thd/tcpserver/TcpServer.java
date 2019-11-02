@@ -103,4 +103,8 @@ public class TcpServer {
             }
         }
 
+    public static void main(String[] args) throws IOException {
+        new TcpServer(10001, "").start();
+    }
+
 }

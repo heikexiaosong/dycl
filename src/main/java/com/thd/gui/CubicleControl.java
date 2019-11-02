@@ -12,10 +12,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CubicleControl extends VBox {
+
+    private OnScanFinish scanFinish;
 
     private boolean connected = false;
 
@@ -39,6 +40,11 @@ public class CubicleControl extends VBox {
     @FXML
     private TableColumn<Process, String> mColumnStatus;
 
+    /**
+     * 构造函数
+     * @param pos
+     * @param name
+     */
     public CubicleControl(int pos, String name) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/cubicle.fxml"));
         fxmlLoader.setRoot(this);
@@ -59,6 +65,7 @@ public class CubicleControl extends VBox {
     }
 
     public boolean accept(int pos){
+        System.out.println(this.pos + " --- " + pos);
         return this.pos == pos;
     }
 
@@ -103,6 +110,9 @@ public class CubicleControl extends VBox {
         mTable.refresh();
 
         if ( complete ){
+            if ( scanFinish!=null ){
+                scanFinish.onFinish(pos);
+            }
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -136,4 +146,29 @@ public class CubicleControl extends VBox {
         return mStatus.textProperty();
     }
 
+    public OnScanFinish getScanFinish() {
+        return scanFinish;
+    }
+
+    public void setScanFinish(OnScanFinish scanFinish) {
+        this.scanFinish = scanFinish;
+    }
+
+    public void check() {
+
+        boolean complete = true;
+        for (Process process : mTable.getItems()) {
+            complete &= process.isSuccess();
+        }
+
+        if ( complete ){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    onConnected();
+                    scanFinish.onFinish(pos);
+                }
+            });
+        }
+    }
 }

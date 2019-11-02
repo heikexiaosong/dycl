@@ -136,7 +136,7 @@
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>libs/</classpathPrefix>
 							<mainClass>
-								com.thd.THDMonitor
+								com.thd.FXMLDemo
 							</mainClass>
 						</manifest>
 					</archive>
