@@ -83,6 +83,8 @@ public class MainController implements Initializable, IHandler {
 
                     for (CubicleControl cubicleControl : cubicleControls) {
                         if ( cubicleControl.accept(process.getStation()) ){
+                            process.setSuccess(false);
+                            process.setStatus("");
                             cubicleControl.insert(process);
                             break;
                         }
@@ -263,9 +265,12 @@ public class MainController implements Initializable, IHandler {
             }
         };
 
+
+        int[] pos = new int[]{4, 3, 2, 1, 8, 7, 6, 5};
+
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
-                CubicleControl cubicleControl = new CubicleControl(i*4 + j + 1, "[" + (i+1) + "-" + (j+1) + "]", i);
+                CubicleControl cubicleControl = new CubicleControl(pos[i*4 + j],  "[" + (i+1) + "-" + (4-j) + "]", i);
                 cubicleControl.setScanFinish(scanFinish);
                 cubicleControls.add(cubicleControl);
                 gridPane.add(cubicleControl, j, i);
@@ -285,24 +290,6 @@ public class MainController implements Initializable, IHandler {
                 }
             }
         });
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    System.out.println("11111");
-                    FXMLDemo.CDL.await();
-                    System.out.println("22222");
-                    executorService.shutdownNow();
-                    if ( !executorService.isTerminated() ){
-                        executorService.shutdown();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
 
         // 自动运转时间 初始化
         try {

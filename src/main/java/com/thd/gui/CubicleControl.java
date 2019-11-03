@@ -172,6 +172,8 @@ public class CubicleControl extends VBox {
             complete &= process.isSuccess();
         }
 
+        onClosed();
+
         if ( complete ){
             Platform.runLater(new Runnable() {
                 @Override

@@ -1,10 +1,7 @@
 package com.thd.opc;
 
 import com.thd.OPCUtils;
-import com.thd.tcpserver.TcpServer;
 import com.thd.utils.PropertiesUtil;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.lang.StringUtils;
 import org.jinterop.dcom.common.JIException;
 import org.jinterop.dcom.core.JIVariant;
 import org.openscada.opc.dcom.list.ClassDetails;
@@ -59,7 +56,7 @@ public class OPCContext {
 
 
 
-    public static void serverList() throws ConfigurationException, JIException, UnknownHostException {
+    public static void serverList() throws JIException, UnknownHostException {
 
         String host = PropertiesUtil.getValue("opc.host", "192.168.2.202");
         String domain = PropertiesUtil.getValue("opc.domain", "");
@@ -84,7 +81,7 @@ public class OPCContext {
 
     public Item readValue(String itemId) throws Exception {
 
-        if (StringUtils.isBlank(itemId)){
+        if (itemId==null || itemId.length()==0){
             throw new RuntimeException("ItemId 不能为空!");
         }
 
@@ -128,7 +125,7 @@ public class OPCContext {
 
     public void writeValue(String itemId, int value) throws Exception {
 
-        if (StringUtils.isBlank(itemId)){
+        if (itemId==null || itemId.length()==0){
             throw new RuntimeException("ItemId 不能为空!");
         }
 
@@ -187,7 +184,7 @@ public class OPCContext {
      */
     public void pulseSignal(String itemId, int delay) throws Exception {
 
-        if (StringUtils.isBlank(itemId)){
+        if (itemId==null || itemId.length()==0){
             throw new RuntimeException("ItemId 不能为空!");
         }
 
@@ -247,7 +244,7 @@ public class OPCContext {
     public void monitor(final String itemId, final int interval, final int delay) throws Exception {
 
 
-        if (StringUtils.isBlank(itemId)){
+        if (itemId==null || itemId.length()==0){
             throw new RuntimeException("ItemId 不能为空!");
         }
 
@@ -299,7 +296,7 @@ public class OPCContext {
 
 
 
-    public static void main(String[] args) throws ConfigurationException, UnknownHostException, JIException {
+    public static void main(String[] args) throws UnknownHostException, JIException {
 
         String item_color = PropertiesUtil.getValue("opc.color.itemid", "Channel1.Device1.Color");
 

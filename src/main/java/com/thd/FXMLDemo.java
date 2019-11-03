@@ -18,6 +18,7 @@ public class FXMLDemo extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/main.fxml"));
 
         primaryStage.setTitle("THD工序物料监测工具 - V1.0");
