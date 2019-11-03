@@ -62,9 +62,6 @@ public class TcpServer {
                                      && buf[count-2]==13
                                      && buf[count-1]==10 ){
                                     char type = (char) buf[2];
-
-                                    System.out.println(buf[2]);
-
                                     if (handler != null) {
                                         handler.handle(type, new String(buf, 3, count-5));
                                     }

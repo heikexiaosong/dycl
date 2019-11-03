@@ -18,4 +18,8 @@ public class OPCUtils {
     public static final String STATION23 = "S7-200.D14.STATION7";
     public static final String STATION24 = "S7-200.D14.STATION8";
 
+
+    public static final String MODE1 = "S7-200.D14.MODE1";
+    public static final String MODE2 = "S7-200.D14.MODE2";
+
 }

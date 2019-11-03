@@ -22,6 +22,8 @@ public class CubicleControl extends VBox {
 
     private final int pos;
 
+    private final int line;
+
     @FXML
     private Label mName;
 
@@ -40,12 +42,20 @@ public class CubicleControl extends VBox {
     @FXML
     private TableColumn<Process, String> mColumnStatus;
 
+    public boolean isLine1(){
+        return line==0;
+    }
+
+    public boolean isLine2(){
+        return line==1;
+    }
+
     /**
      * 构造函数
      * @param pos
      * @param name
      */
-    public CubicleControl(int pos, String name) {
+    public CubicleControl(int pos, String name, int line) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/cubicle.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -62,6 +72,7 @@ public class CubicleControl extends VBox {
             throw new RuntimeException(exception);
         }
         this.pos = pos;
+        this.line = line;
     }
 
     public boolean accept(int pos){
@@ -170,5 +181,15 @@ public class CubicleControl extends VBox {
                 }
             });
         }
+    }
+
+    public void reset() {
+        for (Process process : mTable.getItems()) {
+            process.setStatus("");
+            process.setSuccess(false);
+        }
+        mTable.refresh();
+
+        onClosed();
     }
 }

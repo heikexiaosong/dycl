@@ -1,6 +1,5 @@
 package com.thd;
 
-import java.util.Calendar;
 import java.util.Random;
 
 public class Main {
@@ -12,15 +11,18 @@ public class Main {
 
     public static void main(String[] args) {
 
-        long days = Calendar.getInstance().getTimeInMillis() / (1000*3600*24);
+        String code = "http://sssd.com/dfdf.asp?ss=1&itemcode=1234&sf=0";
+         if ( code.contains("?") ){
+             String query = code.substring(code.indexOf("?")+1);
 
-        for (int i = 0; i < 60; i++) {
-            long day = days + i;
+             String[] params = query.split("&");
+             for (String param : params) {
+                 System.out.println(param);
+                 String[] values = param.split("=");
 
-            System.out.println("Day: " + (day-MAGIC));
-            System.out.println("Day: " + (day-MAGIC)*300);
-
-        }
+                 System.out.println(values[1]);
+             }
+         }
 
 
     }

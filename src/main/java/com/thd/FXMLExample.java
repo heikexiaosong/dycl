@@ -14,7 +14,7 @@ public class FXMLExample extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        CubicleControl cubicleControl = new CubicleControl(1, "dd");
+        CubicleControl cubicleControl = new CubicleControl(1, "dd", 0);
         cubicleControl.setText("Hello!");
 
         stage.setScene(new Scene(cubicleControl));

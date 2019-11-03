@@ -8,17 +8,15 @@ import com.thd.opc.JIVariants;
 import com.thd.opc.OPCContext;
 import com.thd.tcpserver.IHandler;
 import com.thd.tcpserver.TcpServer;
-import javafx.application.Platform;
+import com.thd.utils.URLParser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import org.jinterop.dcom.core.JIVariant;
 import org.openscada.opc.lib.da.Item;
 
 import java.io.File;
@@ -33,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainController implements Initializable, IHandler {
 
@@ -41,6 +40,8 @@ public class MainController implements Initializable, IHandler {
     private static  final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     private static  final ScheduledExecutorService resetMonitor = Executors.newSingleThreadScheduledExecutor();
+
+    private static  final ExecutorService finish = Executors.newFixedThreadPool(8);
 
     @FXML
     private GridPane gridPane;
@@ -55,6 +56,8 @@ public class MainController implements Initializable, IHandler {
     @FXML private CheckBox mChkInterval2;
 
     @FXML private TextField mTextInterval2;
+
+    private  final AtomicBoolean isRunning = new AtomicBoolean(false);
 
 
     private List<CubicleControl> cubicleControls = new ArrayList<>();
@@ -86,6 +89,7 @@ public class MainController implements Initializable, IHandler {
                     }
                 }
 
+                isRunning.set(true);
 
                 for (CubicleControl cubicleControl : cubicleControls) {
                     cubicleControl.check();
@@ -105,8 +109,20 @@ public class MainController implements Initializable, IHandler {
     }
 
     @Override
-    public void handle(int pos, String code) {
+    public void handle(int pos, String text) {
+
+        String code = text;
+
+        if ( text!=null && text.startsWith("http") ){
+            code = URLParser.getParam(text, "itemcode");
+
+        }
+
+
         log("[工位" + pos + "]" + code);
+        if ( !isRunning.get() ) {
+            log("请点击开始按钮，选择配置文件开始监测！");
+        }
         for (CubicleControl cubicleControl : cubicleControls) {
            if ( cubicleControl.accept(pos) ){
                cubicleControl.onScan(code);
@@ -126,21 +142,30 @@ public class MainController implements Initializable, IHandler {
 
         // 定时检测重置信号
         resetMonitor.scheduleWithFixedDelay(new Runnable() {
-            final  OPCContext  context = OPCContext.create();
             @Override
             public void run() {
 
                 // 线1检测
                 try {
-                    Item item = context.readValue(OPCUtils.RESET1);
+                    Item item = OPCContext.instance().readValue(OPCUtils.RESET1);
                     Object value =  JIVariants.getValue(item.read(true).getValue());
                     if ( value!=null ){
                         if ( value instanceof Boolean && ((Boolean) value).booleanValue() ){
                             log("线1重置");
-                            context.writeValue(OPCUtils.RESET1, 0);
+                            OPCContext.instance().writeValue(OPCUtils.RESET1, 0);
+                            for (CubicleControl cubicleControl : cubicleControls) {
+                                if ( cubicleControl.isLine1() ){
+                                    cubicleControl.reset();
+                                }
+                            }
                         } else if ( value instanceof Number  && ((Number) value).intValue()==1  ) {
                             log("线1重置");
-                            context.writeValue(OPCUtils.RESET1, 0);
+                            OPCContext.instance().writeValue(OPCUtils.RESET1, 0);
+                            for (CubicleControl cubicleControl : cubicleControls) {
+                                if ( cubicleControl.isLine1() ){
+                                    cubicleControl.reset();
+                                }
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -149,15 +174,25 @@ public class MainController implements Initializable, IHandler {
 
                 // 线2检测
                 try {
-                    Item item = context.readValue(OPCUtils.RESET2);
+                    Item item = OPCContext.instance().readValue(OPCUtils.RESET2);
                     Object value =  JIVariants.getValue(item.read(true).getValue());
                     if ( value!=null ){
                         if ( value instanceof Boolean && ((Boolean) value).booleanValue() ){
                             log("线2重置");
-                            context.writeValue(OPCUtils.RESET2, 0);
+                            OPCContext.instance().writeValue(OPCUtils.RESET2, 0);
+                            for (CubicleControl cubicleControl : cubicleControls) {
+                                if ( cubicleControl.isLine2() ){
+                                    cubicleControl.reset();
+                                }
+                            }
                         } else if ( value instanceof Number  && ((Number) value).intValue()==1  ) {
                             log("线2重置");
-                            context.writeValue(OPCUtils.RESET2, 0);
+                            OPCContext.instance().writeValue(OPCUtils.RESET2, 0);
+                            for (CubicleControl cubicleControl : cubicleControls) {
+                                if ( cubicleControl.isLine2() ){
+                                    cubicleControl.reset();
+                                }
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -170,14 +205,19 @@ public class MainController implements Initializable, IHandler {
 
 
 
+        // 扫描完成
         OnScanFinish scanFinish = new OnScanFinish() {
-            final  OPCContext  context = OPCContext.create();
             @Override
-            public void onFinish(int pos) {
+            public void onFinish(final int pos) {
 
-                Platform.runLater(new Runnable() {
+                if ( !isRunning.get() ) {
+                    return;
+                }
+
+                finish.submit(new Runnable() {
                     @Override
                     public void run() {
+                        System.out.println(pos);
 
                         String tagid = null;
                         switch (pos) {
@@ -205,13 +245,13 @@ public class MainController implements Initializable, IHandler {
                             case 8:
                                 tagid = OPCUtils.STATION24;
                                 break;
-                                default:
-                                    log("位置信息[" + pos + "]无效");
-                                    return;
+                            default:
+                                log("位置信息[" + pos + "]无效");
+                                return;
                         }
 
                         try {
-                            context.pulseSignal(tagid, 1000);
+                            OPCContext.instance().pulseSignal(tagid, 1000);
                         } catch (Exception e) {
                             e.printStackTrace();
                             log(e.getMessage());
@@ -225,7 +265,7 @@ public class MainController implements Initializable, IHandler {
 
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {
-                CubicleControl cubicleControl = new CubicleControl(i*4 + j + 1, "[" + (i+1) + "-" + (j+1) + "]");
+                CubicleControl cubicleControl = new CubicleControl(i*4 + j + 1, "[" + (i+1) + "-" + (j+1) + "]", i);
                 cubicleControl.setScanFinish(scanFinish);
                 cubicleControls.add(cubicleControl);
                 gridPane.add(cubicleControl, j, i);
@@ -263,6 +303,48 @@ public class MainController implements Initializable, IHandler {
             }
         }).start();
 
+
+        // 自动运转时间 初始化
+        try {
+            Item value = OPCContext.instance().readValue(OPCUtils.INTERVAL1);
+            mTextInterval1.setText(JIVariants.getValue(value.read(true).getValue()).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("获取线1自动运转时间失败：" + e.getMessage());
+        }
+
+        try {
+            Item value = OPCContext.instance().readValue(OPCUtils.INTERVAL2);
+            mTextInterval2.setText(JIVariants.getValue(value.read(true).getValue()).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("获取线2自动运转时间失败：" + e.getMessage());
+        }
+
+        try {
+            Item value = OPCContext.instance().readValue(OPCUtils.MODE1);
+            Object mode = JIVariants.getValue(value.read(true).getValue());
+            if ( mode instanceof  Boolean && ((Boolean) mode).booleanValue() ){
+                mChkInterval1.setSelected(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("获取线2运转模式失败：" + e.getMessage());
+        }
+
+
+        try {
+            Item value = OPCContext.instance().readValue(OPCUtils.MODE2);
+            Object mode = JIVariants.getValue(value.read(true).getValue());
+            if ( mode instanceof  Boolean && ((Boolean) mode).booleanValue() ){
+                mChkInterval2.setSelected(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("获取线2运转模式失败：" + e.getMessage());
+        }
+
+
         log("启动完成");
     }
 
@@ -271,12 +353,10 @@ public class MainController implements Initializable, IHandler {
     }
 
     public void applyInterval1(ActionEvent actionEvent) {
-
         try {
             String interval =  mTextInterval1.getText();
             log("线2更改时间间隔为: " + interval + "分钟");
-            final  OPCContext  context = OPCContext.create();
-            context.writeValue(OPCUtils.INTERVAL1, Integer.parseInt(interval));
+            OPCContext.instance().writeValue(OPCUtils.INTERVAL1, Integer.parseInt(interval));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -290,8 +370,7 @@ public class MainController implements Initializable, IHandler {
         try {
             String interval =  mTextInterval2.getText();
             log("线2更改时间间隔为: " + interval + "分钟");
-            final  OPCContext  context = OPCContext.create();
-            context.writeValue(OPCUtils.INTERVAL2, Integer.parseInt(interval));
+            OPCContext.instance().writeValue(OPCUtils.INTERVAL2, Integer.parseInt(interval));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -302,10 +381,20 @@ public class MainController implements Initializable, IHandler {
 
         if ( mChkInterval1.isSelected() ) {
             // TODO 进入自动模式
-            log("线1进入自动模式");
+            try {
+                OPCContext.instance().writeValue(OPCUtils.MODE1, 1);
+                log("线1进入多工位模式");
+            } catch (Exception e) {
+                log("线1进入多工位模式失败： " + e.getMessage());
+            }
         } else {
             // TODO 进入手动模式
-            log("线1进入手动模式");
+            try {
+                OPCContext.instance().writeValue(OPCUtils.MODE1, 0);
+                log("线1进入单工位模式");
+            } catch (Exception e) {
+                log("线1进入单工位模式失败： " + e.getMessage());
+            }
         }
 
     }
@@ -314,10 +403,20 @@ public class MainController implements Initializable, IHandler {
 
         if ( mChkInterval2.isSelected() ) {
             // TODO 进入自动模式
-            log("线2进入自动模式");
+            try {
+                OPCContext.instance().writeValue(OPCUtils.MODE2, 1);
+                log("线2进入多工位模式");
+            } catch (Exception e) {
+                log("线2进入多工位模式失败： " + e.getMessage());
+            }
         } else {
             // TODO 进入手动模式
-            log("线2进入手动模式");
+            try {
+                OPCContext.instance().writeValue(OPCUtils.MODE2, 0);
+                log("线2进入多工位模式");
+            } catch (Exception e) {
+                log("线2进入多工位模式失败： " + e.getMessage());
+            }
         }
 
     }

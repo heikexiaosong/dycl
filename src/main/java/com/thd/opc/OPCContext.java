@@ -1,5 +1,6 @@
 package com.thd.opc;
 
+import com.thd.OPCUtils;
 import com.thd.tcpserver.TcpServer;
 import com.thd.utils.PropertiesUtil;
 import org.apache.commons.configuration.ConfigurationException;
@@ -21,8 +22,6 @@ import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 public class OPCContext {
 
     private final Server _server;
@@ -54,7 +53,7 @@ public class OPCContext {
         return new OPCContext(null);
     }
 
-    public static final OPCContext create() {
+    public static final OPCContext instance() {
         return LazyHolder.INSTANCE;
     }
 
@@ -312,7 +311,7 @@ public class OPCContext {
         try {
             OPCContext.serverList();
 
-            final  OPCContext  context = OPCContext.create();
+            final  OPCContext  context = OPCContext.instance();
 
             //context.monitor("S7-200.D14.v200", 200, 300000);
 //
@@ -323,19 +322,17 @@ public class OPCContext {
 //
 //            context.writeValue(item_color, 1);
 
-            for (int i = 0; i < 4; i++) {
-                context.pulseSignal("S7-200.D14.v20" + i, 5000);
-            }
+            context.writeValue(OPCUtils.INTERVAL2, 1);
+
+            context.pulseSignal(OPCUtils.STATION21, 1000);
+//            context.pulseSignal(OPCUtils.STATION22, 1000);
+//            context.pulseSignal(OPCUtils.STATION23, 1000);
+//            context.pulseSignal(OPCUtils.STATION24, 1000);
 
         }catch (Exception e) {
             e.printStackTrace();
         }
 
-        try {
-            new TcpServer(10001, "测试位-").start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 }

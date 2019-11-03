@@ -21,7 +21,9 @@
          <Button alignment="CENTER" minWidth="50" onAction="#start" prefWidth="80" text="开 始" />
          <Button mnemonicParsing="false" onAction="#clear" text="清 除" />
          <Separator minWidth="12.0" orientation="VERTICAL" prefHeight="40.0" />
-         <CheckBox fx:id="mChkInterval1" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" onAction="#mode1Changed" prefWidth="100.0" text="定时模式" />
+         <CheckBox fx:id="mChkInterval1" maxWidth="150.0" minWidth="150.0" mnemonicParsing="false" onAction="#mode1Changed" prefWidth="150.0" text="线1单工位模式" />
+         <CheckBox fx:id="mChkInterval2" maxWidth="150.0" minWidth="150.0" mnemonicParsing="false" onAction="#mode2Changed" prefWidth="150.0" text="线2单工位模式" />
+         <Separator minWidth="12.0" orientation="VERTICAL" prefHeight="40.0" />
          <TextField fx:id="mTextInterval1" alignment="CENTER_RIGHT" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="0" />
          <Label maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="分钟">
             <font>
@@ -31,7 +33,6 @@
 
 
          <Separator minWidth="12.0" orientation="VERTICAL" prefHeight="40.0" />
-         <CheckBox fx:id="mChkInterval2" maxWidth="100.0" minWidth="100.0" mnemonicParsing="false" onAction="#mode2Changed" prefWidth="100.0" text="定时模式" />
          <TextField fx:id="mTextInterval2" alignment="CENTER_RIGHT" maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="0" />
          <Label maxWidth="40.0" minWidth="40.0" prefWidth="40.0" text="分钟">
              <font>
