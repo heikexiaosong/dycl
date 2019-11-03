@@ -17,7 +17,7 @@
     </TableView>
    <HBox>
       <children>
-         <Label fx:id="mName"  alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" prefHeight="33.0" prefWidth="120.0" style="-fx-background-color: rgba(127,127,127,0.46);" text="[工位 1-1]" textAlignment="JUSTIFY" textOverrun="CLIP">
+         <Label fx:id="mName"  alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" prefHeight="33.0" minWidth="120" prefWidth="120.0" style="-fx-background-color: rgba(127,127,127,0.46);" text="[工位 1-1]" textAlignment="JUSTIFY" textOverrun="CLIP">
             <font>
                <Font size="15.0" />
             </font></Label>

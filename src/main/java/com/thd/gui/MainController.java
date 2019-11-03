@@ -48,11 +48,13 @@ public class MainController implements Initializable, IHandler {
     @FXML
     private TextArea mTextArea;
 
-    @FXML
-    private CheckBox mChkInterval;
+    @FXML private CheckBox mChkInterval1;
 
-    @FXML
-    private TextField mTextInterval;
+    @FXML private TextField mTextInterval1;
+
+    @FXML private CheckBox mChkInterval2;
+
+    @FXML private TextField mTextInterval2;
 
 
     private List<CubicleControl> cubicleControls = new ArrayList<>();
@@ -127,20 +129,42 @@ public class MainController implements Initializable, IHandler {
             final  OPCContext  context = OPCContext.create();
             @Override
             public void run() {
+
+                // 线1检测
                 try {
-                    Item item = context.readValue(OPCUtils.RESET);
+                    Item item = context.readValue(OPCUtils.RESET1);
                     Object value =  JIVariants.getValue(item.read(true).getValue());
-                    if ( value instanceof Number ){
-                        if ( ((Number) value).intValue() == 1 ){
-                            log("获取到重置信号..");
-                            context.writeValue(OPCUtils.RESET, 0);
+                    if ( value!=null ){
+                        if ( value instanceof Boolean && ((Boolean) value).booleanValue() ){
+                            log("线1重置");
+                            context.writeValue(OPCUtils.RESET1, 0);
+                        } else if ( value instanceof Number  && ((Number) value).intValue()==1  ) {
+                            log("线1重置");
+                            context.writeValue(OPCUtils.RESET1, 0);
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                log("Reset Monitor");
+                // 线2检测
+                try {
+                    Item item = context.readValue(OPCUtils.RESET2);
+                    Object value =  JIVariants.getValue(item.read(true).getValue());
+                    if ( value!=null ){
+                        if ( value instanceof Boolean && ((Boolean) value).booleanValue() ){
+                            log("线2重置");
+                            context.writeValue(OPCUtils.RESET2, 0);
+                        } else if ( value instanceof Number  && ((Number) value).intValue()==1  ) {
+                            log("线2重置");
+                            context.writeValue(OPCUtils.RESET2, 0);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }, 5000, 3000, TimeUnit.MILLISECONDS);
 
@@ -154,8 +178,40 @@ public class MainController implements Initializable, IHandler {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+
+                        String tagid = null;
+                        switch (pos) {
+                            case 1:
+                                tagid = OPCUtils.STATION11;
+                                break;
+                            case 2:
+                                tagid = OPCUtils.STATION12;
+                                break;
+                            case 3:
+                                tagid = OPCUtils.STATION13;
+                                break;
+                            case 4:
+                                tagid = OPCUtils.STATION14;
+                                break;
+                            case 5:
+                                tagid = OPCUtils.STATION21;
+                                break;
+                            case 6:
+                                tagid = OPCUtils.STATION22;
+                                break;
+                            case 7:
+                                tagid = OPCUtils.STATION23;
+                                break;
+                            case 8:
+                                tagid = OPCUtils.STATION24;
+                                break;
+                                default:
+                                    log("位置信息[" + pos + "]无效");
+                                    return;
+                        }
+
                         try {
-                            context.pulseSignal("S7-200.D14.v20" + pos, 1000);
+                            context.pulseSignal(tagid, 1000);
                         } catch (Exception e) {
                             e.printStackTrace();
                             log(e.getMessage());
@@ -214,28 +270,54 @@ public class MainController implements Initializable, IHandler {
         mTextArea.appendText(DATE_FORMAT.format(Calendar.getInstance().getTime()) + ": " + text + "\n");
     }
 
-    public void applyInterval(ActionEvent actionEvent) {
+    public void applyInterval1(ActionEvent actionEvent) {
 
-        String tagid = "S7-200.D14.INTERVAL";
         try {
-            String interval =  mTextInterval.getText();
-            log("更改时间间隔为: " + interval + "分钟");
+            String interval =  mTextInterval1.getText();
+            log("线2更改时间间隔为: " + interval + "分钟");
             final  OPCContext  context = OPCContext.create();
-            context.writeValue(tagid, Integer.parseInt(interval));
+            context.writeValue(OPCUtils.INTERVAL1, Integer.parseInt(interval));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public void modeChanged(ActionEvent actionEvent) {
 
-        if ( mChkInterval.isSelected() ) {
+
+    public void applyInterval2(ActionEvent actionEvent) {
+
+        try {
+            String interval =  mTextInterval2.getText();
+            log("线2更改时间间隔为: " + interval + "分钟");
+            final  OPCContext  context = OPCContext.create();
+            context.writeValue(OPCUtils.INTERVAL2, Integer.parseInt(interval));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void mode1Changed(ActionEvent actionEvent) {
+
+        if ( mChkInterval1.isSelected() ) {
             // TODO 进入自动模式
-            log("进入自动模式");
+            log("线1进入自动模式");
         } else {
             // TODO 进入手动模式
-            log("进入手动模式");
+            log("线1进入手动模式");
+        }
+
+    }
+
+    public void mode2Changed(ActionEvent actionEvent) {
+
+        if ( mChkInterval2.isSelected() ) {
+            // TODO 进入自动模式
+            log("线2进入自动模式");
+        } else {
+            // TODO 进入手动模式
+            log("线2进入手动模式");
         }
 
     }
